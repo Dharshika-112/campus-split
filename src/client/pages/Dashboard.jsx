@@ -21,6 +21,7 @@ export function Dashboard() {
 
   if (loading) return <LoadingState />;
   if (error)   return <ErrorMessage error={error} />;
+  if (!data)   return <ErrorMessage error={{ message: 'No data received from server' }} />;
 
   const { summary, recentTrips } = data;
 
