@@ -17,14 +17,11 @@ export async function getAllTrips() {
 export async function getTripById(tripId) {
   const res = await pool.query(
     `SELECT t.*,
-            COUNT(DISTINCT p.id)::INT         AS participant_count,
-            COUNT(DISTINCT e.id)::INT          AS expense_count,
-            COALESCE(SUM(e.amount_paise), 0)::BIGINT AS total_paise
+            (SELECT COUNT(*) FROM participants WHERE trip_id = t.id)::INT AS participant_count,
+            (SELECT COUNT(*) FROM expenses WHERE trip_id = t.id)::INT AS expense_count,
+            (SELECT COALESCE(SUM(amount_paise), 0) FROM expenses WHERE trip_id = t.id)::BIGINT AS total_paise
      FROM trips t
-     LEFT JOIN participants p ON p.trip_id = t.id
-     LEFT JOIN expenses e     ON e.trip_id = t.id
-     WHERE t.id = $1
-     GROUP BY t.id`,
+     WHERE t.id = $1`,
     [tripId]
   );
   return res.rows[0] || null;
