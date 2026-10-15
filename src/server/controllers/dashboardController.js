@@ -4,12 +4,9 @@ export async function getDashboard(req, res, next) {
   try {
     const summaryRes = await pool.query(
       `SELECT
-         COUNT(DISTINCT t.id)::INT                    AS total_trips,
-         COUNT(DISTINCT p.id)::INT                    AS total_participants,
-         COALESCE(SUM(e.amount_paise), 0)::BIGINT     AS total_paise
-       FROM trips t
-       LEFT JOIN participants p ON p.trip_id = t.id
-       LEFT JOIN expenses e     ON e.trip_id = t.id`
+         (SELECT COUNT(*) FROM trips)::INT                         AS total_trips,
+         (SELECT COUNT(*) FROM participants)::INT                  AS total_participants,
+         (SELECT COALESCE(SUM(amount_paise), 0) FROM expenses)::BIGINT AS total_paise`
     );
 
     const recentRes = await pool.query(
