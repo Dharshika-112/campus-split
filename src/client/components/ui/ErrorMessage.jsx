@@ -1,0 +1,5 @@
+export function ErrorMessage({ error }) {
+  if (!error) return null;
+  const msg = typeof error === 'string' ? error : (error.message || 'Something went wrong');
+  return <div className="error-box">{msg}</div>;
+}
